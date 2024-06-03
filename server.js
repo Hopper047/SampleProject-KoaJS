@@ -5,6 +5,23 @@ const app = new koa();
 app.context.date = Date();
 app.context.useData = { firstName: "John", LastName: "Wick" };
 
+//logger
+app.use(async (ctx, next) => {
+  await next();
+  const responseTime = ctx.response.get("X-Response-Time");
+  console.log(
+    `logger>>> ${ctx.request.method} ${ctx.request.url} - ${responseTime}`
+  );
+});
+
+app.use(async (ctx, next) => {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+
+  ctx.set("X-Response-Time", `${ms} ms`);
+});
+
 app.use((ctx) => {
   // use the state
   ctx.state.user = "Hopper";
@@ -33,6 +50,7 @@ app.use((ctx) => {
     https://Koajs.com/#request
     https://Koajs.com/#response
 
+    https://github.com/koajs/examples
     */
 });
 
